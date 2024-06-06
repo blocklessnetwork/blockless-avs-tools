@@ -4,11 +4,14 @@ import (
 	"os"
 
 	sdkecdsa "github.com/Layr-Labs/eigensdk-go/crypto/ecdsa"
+	sdkutils "github.com/Layr-Labs/eigensdk-go/utils"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 	avs "github.com/zees-dev/blockless-avs"
 	"github.com/zees-dev/blockless-avs/core/config"
 	"github.com/zees-dev/blockless-avs/core/logging"
+	"github.com/zees-dev/blockless-avs/operator"
+	"github.com/zees-dev/blockless-avs/types"
 )
 
 const AppName = "Blockless AVS Tools"
@@ -20,11 +23,11 @@ func main() {
 	app.Usage = "Tools for interacting with Blockless AVS contracts"
 
 	// globally required flags
-	// app.Flags = []cli.Flag{
-	// 	config.DevModeFlag,
-	// 	config.ConfigFileFlag,
-	// 	config.HeadlessFlag,
-	// }
+	app.Flags = []cli.Flag{
+		// config.DevModeFlag,
+		config.ConfigFileFlag,
+		// config.HeadlessFlag,
+	}
 
 	// init app state, store in context
 	app.Before = func(c *cli.Context) error {
@@ -32,27 +35,27 @@ func main() {
 
 		// setup operator from config file - provided as flag
 		// devMode := c.Bool(config.DevModeFlag.Name)
-		// configPath := c.String(config.ConfigFileFlag.Name)
+		configPath := c.String(config.ConfigFileFlag.Name)
 		// headless := c.Bool(config.HeadlessFlag.Name)
 
-		// nodeConfig := types.NodeConfig{}
-		// if err := sdkutils.ReadYamlConfig(configPath, &nodeConfig); err != nil {
-		// 	return err
-		// }
-		// operator, err := operator.NewOperatorFromConfig(logger, nodeConfig)
-		// if err != nil {
-		// 	return err
-		// }
+		nodeConfig := types.NodeConfig{}
+		if err := sdkutils.ReadYamlConfig(configPath, &nodeConfig); err != nil {
+			return err
+		}
+		operator, err := operator.NewOperatorFromConfig(logger, nodeConfig)
+		if err != nil {
+			return err
+		}
 
 		// if !headless {
 		// 	return errors.New("only headless mode is supported")
 		// }
 
 		c.App.Metadata[avs.AppConfigKey] = &avs.AppConfig{
-			AppName: AppName,
-			Logger:  logger,
-			// NodeConfig: &nodeConfig,
-			// Operator:   operator,
+			AppName:    AppName,
+			Logger:     logger,
+			NodeConfig: &nodeConfig,
+			Operator:   operator,
 			// DevMode:    devMode,
 			// Headless:   headless,
 		}
