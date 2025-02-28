@@ -95,7 +95,7 @@ AVS Registry contracts have a stale view of operator shares in the delegation ma
 
 ## Integration Tests
 
-See the integration tests [README](tests/anvil/README.md) for more details.
+See the integration tests [README](https://github.com/blocklessnetwork/blockless-avs-tools/blob/main/README.md) for more details.
 
 ---
 
